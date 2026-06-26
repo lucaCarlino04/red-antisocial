@@ -28,7 +28,7 @@ function App() {
 
               {/* Estas 2 tienen que ser protegidas */}
               <Route element={<RutaProtegida />}>
-                <Route path="/perfil" element={<Perfil />} />
+                <Route path="/perfil/:nickName" element={<Perfil />} />
                 <Route path="/publicar" element={<CrearPost />} />
               </Route>
 

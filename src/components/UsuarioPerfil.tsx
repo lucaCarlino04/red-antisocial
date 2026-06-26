@@ -11,9 +11,9 @@ export default function UsuarioPerfil({ nickName }: { nickName: string }) {
             setUsuario(usuario);
         }
 
-        console.log(usuario)
         cargarUsuario();
-        }, []
+        console.log(usuario)
+        }, [nickName]
     );
 
     if (!usuario) {
