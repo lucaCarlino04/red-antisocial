@@ -2,6 +2,8 @@ import { createContext, useContext, useState } from "react";
 
 type Usuario = { id: number; nickName: string };
 
+//para poder crear una rama escribo un comentario
+
 const AuthContext = createContext<{ usuario: Usuario | null } | null>(null);
 
 export default function AuthProvider({
