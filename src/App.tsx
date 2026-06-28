@@ -8,7 +8,7 @@ import DetallePost from "./pages/DetallePost";
 import RegistroUsuario from "./pages/RegistroUsuario";
 import InicioSesion from "./pages/InicioSesion";
 import RutaProtegida from "./components/RutaProtegida";
-import AuthProvider from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthContext";
 import Header from "./components/Header";
 import Navbar from "./components/Navbar";
 
@@ -21,8 +21,8 @@ function App() {
             <Header />
             <Navbar />
             <Routes>
-              <Route path="/" element={<Inicio />} />
-              <Route path="/iniciar" element={<InicioSesion />} />
+              
+              <Route path="/" element={<InicioSesion />} />
               <Route path="/registrar" element={<RegistroUsuario />} />
               <Route path="/publicacion/:id" element={<DetallePost />} />
 
@@ -30,6 +30,7 @@ function App() {
               <Route element={<RutaProtegida />}>
                 <Route path="/perfil/:nickName" element={<Perfil />} />
                 <Route path="/publicar" element={<CrearPost />} />
+                <Route path="/inicio" element={<Inicio />} />
               </Route>
 
               {/* Pagina error */}

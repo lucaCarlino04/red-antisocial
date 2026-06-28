@@ -1,29 +1,53 @@
 import { createContext, useContext, useState } from "react";
+import type { AuthContextType, LoginData, User } from "../types/loginDatos";
 
-type Usuario = { id: number; nickName: string };
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-//para poder crear una rama escribo un comentario
+const permitido = {
+  id: 1,
+  name: "Harry",
+  email: "harryKane@gmail.com",
+  password: "1234",
+};
 
-const AuthContext = createContext<{ usuario: Usuario | null } | null>(null);
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
 
-export default function AuthProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  //No hay usuario
-  // const [usuario] = useState<Usuario | null>(null);
+  function iniciar(data: LoginData): boolean {
+    if (data.email === permitido.email && data.password === permitido.password) {
+      const loggedUser: User = {
+        id: permitido.id,
+        name: permitido.name,
+        email: permitido.email,
+      };
 
-  //Simular que si hay usuario
-  const [usuario] = useState<Usuario | null>({ id: 1, nickName: "test" });
+      setUser(loggedUser);
+      return true;
+    }
 
-  return (
-    <AuthContext.Provider value={{ usuario }}>{children}</AuthContext.Provider>
-  );
+    return false;
+  }
+
+  function salir() {
+    setUser(null);
+  }
+
+  const value: AuthContextType = {
+    user,
+    isAuthenticated: user !== null,
+    iniciar,
+    salir,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export const useAuth = () => {
+export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth debe usarse dentro de AuthProvider");
+
+  if (context === undefined) {
+    throw new Error("useAuth debe usarse dentro de un AuthProvider");
+  }
+
   return context;
-};
+}
