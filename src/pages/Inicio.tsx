@@ -10,7 +10,6 @@ import PostCard from "../components/PostCard";
 import TagBoton from "../components/TagBoton";
 import ComponenteAnimado from "../components/ComponenteAnimado";
 
-
 const POSTS_POR_PAGINA = 4;
 
 export default function Inicio() {
@@ -90,7 +89,7 @@ export default function Inicio() {
         </div>
       )}
 
-      {postsFiltrados.length === 0 ? (
+      {postsFiltrados.length === 0 && filtro ? (
         <h4 className="font-medium rounded-lg border border-dashed py-2 text-center text-red-500">
           No hay publicaciones con el tag #{filtro}.
         </h4>
@@ -113,8 +112,8 @@ export default function Inicio() {
           Ver más
         </button>
       ) : (
-        <h4 className="font-medium rounded-lg border border-dashed py-2 text-center text-zinc-500 dark:text-gray-500">
-          No hay mas publicaciones.
+        <h4 className="font-medium rounded-lg border border-dashed py-2 text-center text-zinc-600 dark:text-gray-500">
+          No hay más publicaciones.
         </h4>
       )}
     </section>

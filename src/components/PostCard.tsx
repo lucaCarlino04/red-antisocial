@@ -20,10 +20,10 @@ export default function PostCard({
   return (
     <>
       <article
-        className={`px-6 py-4 border rounded-lg bg-zinc-300 dark:bg-gray-900 transition-colors ${
+        className={`px-6 py-4 border rounded-lg bg-zinc-200 dark:bg-gray-900 transition-colors ${
           destacado
             ? "border-blue-500"
-            : "border-zinc-200 dark:border-gray-800/60"
+            : "border-zinc-300 dark:border-gray-800/60"
         }`}
       >
         <div className="flex flex-col gap-3 flex-1 min-w-0">
