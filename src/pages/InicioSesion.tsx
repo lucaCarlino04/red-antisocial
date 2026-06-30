@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import {useAuth} from "../context/AuthContext"
 
 export default function InicioSesion() {
 
   const navigate = useNavigate();
-  const { iniciar, isAuthenticated } = useAuth();
+  const {iniciar} = useAuth();
 
   const [nickName, setnickName] = useState("");
   const [password, setPassword] = useState("");
@@ -17,6 +17,8 @@ export default function InicioSesion() {
   const [passwordError, setPasswordError] = useState(false);
 
 async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+
+  
   event.preventDefault();
 
   const nickVacio = nickName.trim() === "";
@@ -34,12 +36,16 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     password,
   });
 
+  console.log(loginOk);
+
   if (loginOk) {
     setError("");
-    navigate("/inicio");
+    navigate(`/perfil/${nickName}`);
+
   } else {
     setError("Email o contraseña inválidos");
   }
+
 }
 
 
