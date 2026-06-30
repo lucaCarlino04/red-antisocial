@@ -40,11 +40,14 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 
   if (loginOk) {
     setError("");
-    navigate(`/perfil/${nickName}`);
+    navigate("/");
 
   } else {
     setError("Email o contraseña inválidos");
   }
+
+
+  event.preventDefault();
 
 }
 
@@ -61,7 +64,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block mb-2">
+            <label htmlFor="emailORnickName" className="block mb-2">
               Email o nickName
             </label>
             <input
