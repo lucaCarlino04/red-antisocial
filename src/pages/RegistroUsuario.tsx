@@ -1,17 +1,20 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { crearUsuario } from "../services/UsuarioService";
 import type { CamposFormulario } from "../types/FormularioRegistro";
 import type { ErroresRegistro } from "../types/ErroresRegistro";
 
 export default function RegistroUsuario() {
 
+  const navigate = useNavigate();
+
   const email_regex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const name_regex: RegExp = /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s'-]{2,}$/;
   const name_min_length: number = 4;
   const nickname_min_length: number = 4;
-  const password_min_length: number = 8;
-  const password_max_length: number = 32;
+  const passCorrect: string = "123456";
+
+  const [errorServidor, setErrorServidor] = useState<string>("");
 
   const [errores, setErrores] = useState<Partial<ErroresRegistro>>({
     nombre: "",
@@ -34,7 +37,7 @@ export default function RegistroUsuario() {
     setErrores({ ...errores, [e.target.name]: "" })
   }
 
-  function enviandoInformacion(e: any) {
+  async function enviandoInformacion(e: any) {
     e.preventDefault();
     const erroresActuales: Partial<ErroresRegistro> = {};
 
@@ -60,7 +63,7 @@ export default function RegistroUsuario() {
       erroresActuales.email = "El Email no tiene formato valido"
     }
 
-    if (formulario.contraseña.length < password_min_length || formulario.contraseña.length > password_max_length) {
+    if (formulario.contraseña !== passCorrect) {
       erroresActuales.contraseña = "La contraseña no tiene la cantidad de caracteres requeridos"
     }
 
@@ -69,90 +72,126 @@ export default function RegistroUsuario() {
     if (Object.keys(erroresActuales).length > 0) {
       return;
     }
+
+    try {
+      await crearUsuario(formulario.nickname);
+      navigate("/iniciar");
+    } catch (err) {
+      setErrorServidor(err instanceof Error ? err.message : "Error inesperado");
+    }
   }
 
   return (
-    <div>
-      <div>
-        <h1>Registro</h1>
-        <p>Completa los campos para continuar:</p>
-      </div>
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="w-full max-w-md">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold">Registro</h1>
+          <p className="mt-2">Completa los campos para continuar:</p>
+        </div>
 
-      <form onSubmit={enviandoInformacion}>
-        <div>
-          <label>
-            <span>{errores.nombre ? errores.nombre : "Nombre"}</span>
-            <input
-              id="nombre"
-              type="text"
-              name="nombre"
-              placeholder="Nombre"
-              value={formulario.nombre}
-              onChange={completandoRegistro}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            <span>{errores.apellido ? errores.apellido : "Apellido"}</span>
-            <input
-              id="apellido"
-              type="text"
-              name="apellido"
-              placeholder="Apellido"
-              value={formulario.apellido}
-              onChange={completandoRegistro}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
+        {errorServidor && (
+          <div className="bg-red-50 border border-red-300 text-red-700 text-sm rounded-md px-4 py-3 mb-4">
+            {errorServidor}
+          </div>)
+        }
+
+        <form onSubmit={enviandoInformacion} className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <label className="flex flex-col gap-1">
+              <span>{errores.nombre ? errores.nombre : "Nombre"}</span>
+              <input
+                id="nombre"
+                type="text"
+                name="nombre"
+                placeholder="Nombre"
+                className="w-full rounded-md p-2 border transition border-2"
+                value={formulario.nombre}
+                onChange={completandoRegistro}
+              />
+            </label>
+            <label className="flex flex-col gap-1">
+              <span>{errores.apellido ? errores.apellido : "Apellido"}</span>
+              <input
+                id="apellido"
+                type="text"
+                name="apellido"
+                placeholder="Apellido"
+                className="w-full rounded-md p-2 border transition border-2"
+                value={formulario.apellido}
+                onChange={completandoRegistro}
+              />
+            </label>
+          </div>
+          <label className="flex flex-col gap-1">
             <span>{errores.nickname ? errores.nickname : "Nickname"}</span>
             <input
               id="nickname"
               type="text"
               name="nickname"
               placeholder="Nickname"
+              className="w-full rounded-md p-2 border transition border-2"
               value={formulario.nickname}
               onChange={completandoRegistro}
             />
           </label>
-        </div>
-        <div>
-          <label>
+          <label className="flex flex-col gap-1">
             <span>{errores.email ? errores.email : "Email"}</span>
             <input
               id="email"
               type="email"
               name="email"
               placeholder="Email"
+              className="w-full rounded-md p-2 border transition border-2"
               value={formulario.email}
               onChange={completandoRegistro}
             />
           </label>
-        </div>
-        <div>
-          <label>
+          <label className="flex flex-col gap-1">
             <span>{errores.contraseña ? errores.contraseña : "Contraseña"}</span>
             <input
               id="contraseña"
               type="password"
               name="contraseña"
               placeholder="Contraseña"
+              className="w-full rounded-md p-2 border transition border-2"
               value={formulario.contraseña}
               onChange={completandoRegistro}
             />
           </label>
-        </div>
-        <div>
-          <button type="submit">
+          <button type="submit" className="
+            w-full
+            mt-2
+            py-3
+            rounded-md
+            bg-gray-800
+            text-white
+            font-semibold
+            transition
+            hover:bg-gray-700
+            active:bg-bg-gray-300
+            active:scale-95">
             Registrarse
           </button>
-          <button type="button">
-            ¿Ya tenés una cuenta? Inicia sesión
+        </form>
+        <div className="mt-4 text-center">
+          <p>¿Ya tenes una cuenta?</p>
+          <button type="button" className="
+            w-full
+            mt-3
+            py-3
+            rounded-md
+            bg-blue-600
+            text-white
+            font-semibold
+            transition
+            hover:bg-blue-700
+            active:bg-blue-800
+            active:scale-95"
+            onClick={() => navigate("/iniciar")}>
+            Inicia sesión
           </button>
         </div>
-      </form>
+      </div>
     </div>
   );
 }
