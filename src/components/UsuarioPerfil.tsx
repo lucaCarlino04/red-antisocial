@@ -1,6 +1,17 @@
 import type { Usuario } from "../types/Usuario";
+import Spinner from "../components/Spinner";
 
-export default function UsuarioPerfil({nickName,esMiPerfil, yaLoSigo, toggleFollow }: { nickName: Usuario; esMiPerfil: boolean; yaLoSigo: boolean; toggleFollow: () => void;}) {
+export default function UsuarioPerfil({
+  nickName,
+  esMiPerfil, 
+  yaLoSigo, 
+  toggleFollow,
+  loading }: {
+  nickName: Usuario; 
+  esMiPerfil: boolean; 
+  yaLoSigo: boolean; 
+  toggleFollow: () => void;
+  loading: boolean}) {
 return (
   <div>
         {/* HEADER PERFIL */}
@@ -36,15 +47,23 @@ return (
             </button>
           ) : (
             <button
-              onClick={toggleFollow}
-              className={`w-full py-2 rounded-full font-semibold transition ${
-                yaLoSigo
-                  ? "bg-gray-700 hover:bg-gray-800 text-white"
-                  : "bg-emerald-700 hover:bg-emerald-800 text-white"
-              }`}
-            >
-              {yaLoSigo ? "Dejar de seguir" : "Seguir"}
-            </button>
+  onClick={toggleFollow}
+  disabled={loading}
+  className={`group w-full ${yaLoSigo ? "bg-gray-700 hover:bg-gray-800" : "bg-emerald-700 hover:bg-emerald-800"} text-white py-2 rounded-full font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2`}
+>
+  {loading ? (
+    <>
+      <Spinner />
+    </>
+  ) : yaLoSigo ? (
+    <>
+      <span className="group-hover:hidden">Siguiendo</span>
+      <span className="hidden group-hover:inline">Dejar de seguir</span>
+    </>
+  ) : (
+    "Seguir"
+  )}
+</button>
           )}
         </div>
 

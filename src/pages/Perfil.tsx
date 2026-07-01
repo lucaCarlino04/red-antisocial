@@ -9,8 +9,10 @@ import { obtenerPostsDeUsuario } from "../services/PostService";
 import { obtenerComentariosPorPost } from "../services/ComentarioService";
 
 import UsuarioPerfil from "../components/UsuarioPerfil";
+
 import PostCard from "../components/PostCard";
 import ComponenteAnimado from "../components/ComponenteAnimado";
+
 import { useAuth } from "../context/AuthContext";
 
 
@@ -18,9 +20,11 @@ export default function Perfil() {
   const { nickName } = useParams<{ nickName: string }>();
   const { isAuthenticated, user, refrescarUsuario } = useAuth();
   const [usuario, setUsuario] = useState<Usuario | null>(null);
+  const [loadingFollow, setLoadingFollow] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
   const [cantidadComentarios, setCantidadComentarios] = useState<Record<string, number>>({});
   const esMiPerfil = isAuthenticated && user?.nickName === usuario?.nickName;
+  
   const cargarUsuario = async () => {
     if (!nickName) return;
 
@@ -31,7 +35,7 @@ export default function Perfil() {
     setPosts(posts);
 
     const contadorComentarios: Record<string, number> = {};
-    
+
 
     for (const post of posts) {
       const comentarios = await obtenerComentariosPorPost(post._id);
@@ -40,18 +44,26 @@ export default function Perfil() {
 
     setCantidadComentarios(contadorComentarios);
   };
+
+  const yaLoSigo = usuario?.followers.includes(user?._id ?? "") ?? false;
   
   const toggleFollow = async () => {
     if (!user || !usuario) return;
 
-    if (yaLoSigo) {
-      await dejarDeSeguirUsuario(user.nickName, usuario.nickName);
-    } else {
-      await seguirUsuario(user.nickName, usuario.nickName);
-    }
+    setLoadingFollow(true);
 
-    await refrescarUsuario();
-    await cargarUsuario();
+    try {
+      if (yaLoSigo) {
+        await dejarDeSeguirUsuario(user.nickName, usuario.nickName);
+      } else {
+        await seguirUsuario(user.nickName, usuario.nickName);
+      }
+
+      await refrescarUsuario();
+      await cargarUsuario();
+    } finally {
+      setLoadingFollow(false);
+    }
   };
     
   useEffect(() => {
@@ -59,13 +71,12 @@ export default function Perfil() {
   }, [nickName]);
 
   if (!usuario) return <p>Cargando...</p>;
-
-  const yaLoSigo = usuario?.followers.includes(user?._id ?? "") ?? false;
+  
 
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white flex justify-center">
       <div className="w-full max-w-xl px-4 py-6">
-        <UsuarioPerfil nickName={usuario} esMiPerfil={esMiPerfil} yaLoSigo={yaLoSigo} toggleFollow={toggleFollow} />
+        <UsuarioPerfil nickName={usuario} esMiPerfil={esMiPerfil} yaLoSigo={yaLoSigo} toggleFollow={toggleFollow} loading={loadingFollow} />
         
         {posts 
         ? posts.map((post) => (

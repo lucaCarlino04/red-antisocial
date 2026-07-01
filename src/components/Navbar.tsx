@@ -49,7 +49,7 @@ const links = [
           {isAuthenticated && (
             <li>
               <button onClick={salir} className={estiloLink(false)} >
-                <LogOut size={24} strokeWidth={2} />
+                <LogOut className="text-red-800" size={24} strokeWidth={2} />
               </button>
             </li>
           )}
