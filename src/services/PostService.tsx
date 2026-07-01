@@ -18,6 +18,10 @@ export async function obtenerPosts(): Promise<Post[]> {
 export async function obtenerPostPorId(id: string): Promise<Post> {
   const respuesta = await fetch(`${API_URL}/${id}`);
 
+  if (respuesta.status === 400) {
+    throw new Error("NO-EXISTE");
+  }
+
   if (!respuesta.ok) {
     throw new Error("No se pudo obtener el post");
   }
@@ -28,5 +32,5 @@ export async function obtenerPostPorId(id: string): Promise<Post> {
 export async function obtenerPostsDeUsuario(nickName: string): Promise<Post[]> {
   const posts = await obtenerPosts();
 
-  return posts.filter(post => post.user.nickName === nickName);
+  return posts.filter((post) => post.user.nickName === nickName);
 }

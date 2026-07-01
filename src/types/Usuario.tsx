@@ -1,9 +1,10 @@
 export type Usuario = {
   _id: string;
-  password:string;
+  password: string;
   nickName: string;
-  followers: Usuario[];
-  following: Usuario[];
+  description?: string;
+  followers: string[];
+  following: string[];
 };
 
 export type LoginData = {
