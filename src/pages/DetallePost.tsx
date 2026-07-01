@@ -107,8 +107,8 @@ export default function DetallePost() {
 
         {/* Lista de comentarios */}
         {comentarios.length === 0 ? (
-          <p className="text-sm text-zinc-600 dark:text-gray-500">
-            Nadie comentó todavía. Sé el primero.
+          <p className=" text-zinc-600 dark:text-gray-500">
+            Todavia no hay comentarios, podes ser el primero.
           </p>
         ) : (
           <ul className="space-y-2">

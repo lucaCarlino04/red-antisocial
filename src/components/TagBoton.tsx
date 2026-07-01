@@ -11,6 +11,7 @@ export default function TagBoton({
 }: TagBotonProps) {
   return (
     <button
+      type="button"
       onClick={onClick}
       className={`text-xs font-medium px-1.5 py-0.5 rounded-md border  transition-colors ${
         onClick ? "cursor-pointer" : "cursor-default"

@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useAlert } from "../context/AlertContext";
-import { obtenerTags } from "../services/TagService";
+import { crearTag, obtenerTags } from "../services/TagService";
 import { crearPost, asociarImagenAPost } from "../services/PostService";
 import type { Tag } from "../types/Tag";
 import Loader from "../components/Loader";
-import Error from "../components/ComponenteError";
+import ComponenteError from "../components/ComponenteError";
 import ComponenteAnimado from "../components/ComponenteAnimado";
 import { Plus, Trash2, Image, Tag as TagIcon } from "lucide-react";
+import TagBoton from "../components/TagBoton";
 
 export default function CrearPost() {
   const { user } = useAuth();
@@ -19,9 +20,13 @@ export default function CrearPost() {
   const [tagsDisponibles, setTagsDisponibles] = useState<Tag[]>([]);
   const [tagsSeleccionados, setTagsSeleccionados] = useState<string[]>([]);
   const [urlsImagenes, setUrlsImagenes] = useState<string[]>([""]);
+  const [nuevaEtiqueta, setNuevaEtiqueta] = useState("");
+  const [creandoTag, setCreandoTag] = useState(false);
+  const [errorTag, setErrorTag] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [errorForm, setErrorForm] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
 
   useEffect(() => {
@@ -53,76 +58,131 @@ export default function CrearPost() {
     setUrlsImagenes(nuevasUrls.length === 0 ? [""] : nuevasUrls);
   };
 
-  const manejarSeleccionTag = (tagDescription: string) => {
+  const manejarSeleccionTag = (tagId: string) => {
     setTagsSeleccionados((prev) =>
-      prev.includes(tagDescription)
-        ? prev.filter((desc) => desc !== tagDescription)
-        : [...prev, tagDescription]
+      prev.includes(tagId)
+        ? prev.filter((id) => id !== tagId)
+        : [...prev, tagId],
     );
   };
 
-  const handleSubmit = async (event: {preventDefault: () => void}) => {
-    event.preventDefault();
+  const manejarCrearTag = async () => {
+    const nombreLimpio = nuevaEtiqueta.trim();
+    setErrorTag(null);
 
-    if (description.trim() === "") {
-      setError("La descripción no puede estar vacía");
+    if (nombreLimpio.length < 2) {
+      setErrorTag("La etiqueta debe tener al menos 2 caracteres");
+      return;
+    }
+
+    if (nombreLimpio.length > 20) {
+      setErrorTag("La etiqueta debe tener como máximo 20 caracteres");
+      return;
+    }
+
+    const yaExiste = tagsDisponibles.some(
+      (tag) => tag.description.toLowerCase() === nombreLimpio.toLowerCase(),
+    );
+
+    if (yaExiste) {
+      setErrorTag("Esa etiqueta ya existe, seleccionala de la lista");
+      return;
+    }
+
+    try {
+      setCreandoTag(true);
+      const tagCreado = await crearTag(nombreLimpio);
+      setTagsDisponibles((prev) => [...prev, tagCreado]);
+      setTagsSeleccionados((prev) => [...prev, tagCreado._id]);
+      setNuevaEtiqueta("");
+    } catch (err) {
+      setErrorTag(
+        err instanceof Error ? err.message : "No se pudo crear la etiqueta",
+      );
+    } finally {
+      setCreandoTag(false);
+    }
+  };
+
+  const handleSubmit = async (event: { preventDefault: () => void }) => {
+    event.preventDefault();
+    setErrorForm(null);
+
+    const descripcionLimpia = description.trim();
+
+    if (descripcionLimpia === "") {
+      setErrorForm("La descripción no puede estar vacía");
+      return;
+    }
+
+    if (descripcionLimpia.length < 5) {
+      setErrorForm("La descripción debe tener al menos 5 caracteres");
+      return;
+    }
+
+    if (tagsSeleccionados.length === 0) {
+      setErrorForm("Debés seleccionar al menos una etiqueta para publicar");
       return;
     }
 
     if (!user || !user._id) {
-      setError("Debes iniciar sesión para publicar");
+      setErrorForm("Debes iniciar sesión para publicar");
       return;
     }
 
     try {
       setEnviando(true);
-      setError("");
 
       const datosParaElBackend = {
-        description: description.trim(),
-        user: user._id, 
-        tags: tagsSeleccionados
+        description: descripcionLimpia,
+        user: user._id,
+        tags: tagsSeleccionados,
       };
 
-      const nuevoPost = await crearPost(datosParaElBackend as any);
-      console.log("¡Post creado con éxito!", nuevoPost);
+      const nuevoPost = await crearPost(datosParaElBackend);
 
       const imagenesValidas = urlsImagenes.filter((url) => url.trim() !== "");
 
       if (imagenesValidas.length > 0 && nuevoPost._id) {
         await asociarImagenAPost(nuevoPost._id, imagenesValidas);
-      } 
+      }
 
       mostrarAlerta("Publicación creada con éxito", "exito");
       setDescription("");
       setUrlsImagenes([""]);
       setTagsSeleccionados([]);
-      navigate("/"); 
-
-    } catch (err: any) {
-      setError(err?.message || "Error al crear la publicación");
+      navigate("/");
+    } catch (err) {
+      setErrorForm(
+        err instanceof Error ? err.message : "Error al crear la publicación",
+      );
     } finally {
       setEnviando(false);
     }
-  }
+  };
 
   if (loading) return <Loader />;
-  if (error) return <Error mensaje={error} />;
+  if (error) return <ComponenteError mensaje={error} />;
 
   return (
     <section className="max-w-2xl mx-auto p-4 space-y-4">
       <ComponenteAnimado>
         <div className="rounded-lg border p-6 border-zinc-300 dark:border-gray-800/60 bg-zinc-200 dark:bg-gray-900 space-y-6">
           <div className="space-y-1">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white font-display">Nueva Publicación</h1>
-            <p className="text-sm text-zinc-600 dark:text-gray-500">Expresate y compartilo en el feed.</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white font-display">
+              Nueva Publicación
+            </h1>
+            <p className="text-sm text-zinc-600 dark:text-gray-500">
+              Expresate y compartilo en el feed.
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Contenido principal del Post */}
             <div className="space-y-2">
               <label className="block text-sm font-semibold text-zinc-700 dark:text-gray-300">
-                ¿Qué tenés ganas de contar? <span className="text-red-500">*</span>
+                ¿Qué tenés ganas de contar?{" "}
+                <span className="text-red-500">*</span>
               </label>
               <textarea
                 value={description}
@@ -133,32 +193,54 @@ export default function CrearPost() {
                 className="w-full rounded-lg border px-3 py-2 border-zinc-200 dark:border-gray-800/60 bg-zinc-300/20 dark:bg-gray-900/20 placeholder:text-zinc-400/60 dark:placeholder:text-gray-600/60 outline-none focus:outline-solid focus:outline-2 focus:outline-blue-500/80 text-sm resize-none"
                 required
               />
+              {errorForm && <p className="text-sm text-red-500">{errorForm}</p>}
             </div>
 
             {/* Selector de Etiquetas */}
             <div className="space-y-2">
               <label className="flex items-center gap-1.5 text-sm font-semibold text-zinc-700 dark:text-gray-300">
-                <TagIcon size={16} /> Seleccionar Etiquetas
+                <TagIcon size={16} /> Seleccionar Etiquetas{" "}
+                <span className="text-red-500 text-xs">
+                  (el post debe tener al menos una etiqueta*)
+                </span>
               </label>
               <div className="flex flex-wrap gap-2 pt-1">
-                {tagsDisponibles.map((tag) => {
-                  const activo = tagsSeleccionados.includes(tag.description);
-                  return (
-                    <button
-                      key={tag._id}
-                      type="button"
-                      onClick={() => manejarSeleccionTag(tag.description)}
-                      className={`text-xs font-medium px-2.5 py-1 rounded-md border border-dashed transition-colors cursor-pointer ${
-                        activo
-                          ? "bg-zinc-900 dark:bg-white text-white dark:text-gray-900 border-zinc-900 dark:border-white"
-                          : "border-zinc-300 dark:border-gray-700 text-zinc-500 dark:text-gray-500 hover:border-zinc-500"
-                      }`}
-                    >
-                      #{tag.description}
-                    </button>
-                  );
-                })}
+                {tagsDisponibles.map((tag) => (
+                  <TagBoton
+                    key={tag._id}
+                    descripcion={`#${tag.description}`}
+                    activo={tagsSeleccionados.includes(tag._id)}
+                    onClick={() => manejarSeleccionTag(tag._id)}
+                  />
+                ))}
               </div>
+
+              {/* Crear nueva etiqueta */}
+              <div className="flex gap-2 items-center pt-1">
+                <input
+                  type="text"
+                  value={nuevaEtiqueta}
+                  onChange={(e) => setNuevaEtiqueta(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      manejarCrearTag();
+                    }
+                  }}
+                  placeholder="Crear nueva etiqueta"
+                  maxLength={20}
+                  className="flex-1 rounded-lg border px-3 py-2 border-zinc-200 dark:border-gray-800/60 bg-zinc-300/20 dark:bg-gray-900/20 placeholder:text-zinc-400/60 dark:placeholder:text-gray-600/60 outline-none focus:outline-solid focus:outline-2 focus:outline-blue-500/80 text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={manejarCrearTag}
+                  disabled={creandoTag || nuevaEtiqueta.trim() === ""}
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-blue-500 hover:text-blue-400 transition-colors px-2 py-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Plus size={14} /> {creandoTag ? "Creando..." : "Crear"}
+                </button>
+              </div>
+              {errorTag && <p className="text-sm text-red-500">{errorTag}</p>}
             </div>
 
             {/* Carga de URLs de Imágenes */}
@@ -199,8 +281,12 @@ export default function CrearPost() {
             {/* Botón Submit */}
             <button
               type="submit"
-              disabled={!description.trim() || enviando}
-              className="w-full py-2.5 border border-dashed rounded-lg transition-colors cursor-pointer text-blue-700 bg-blue-500/10 hover:bg-transparent hover:text-blue-500 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed font-display"
+              disabled={
+                !description.trim() ||
+                tagsSeleccionados.length === 0 ||
+                enviando
+              }
+              className="w-full py-2 rounded-lg transition-colors cursor-pointer text-white bg-blue-500 hover:bg-blue-600 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed font-display"
             >
               {enviando ? "Publicando..." : "Crear posteo"}
             </button>

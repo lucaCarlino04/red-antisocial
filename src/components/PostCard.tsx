@@ -79,14 +79,11 @@ export default function PostCard({
                   className="flex items-center gap-1 text-zinc-600 dark:text-gray-500 hover:text-black dark:hover:text-white transition-colors"
                 >
                   <MessageCircle size={16} />
-                  {cantidadComentarios > 0 && (
-                    <span className="text-sm">
-                      {cantidadComentarios}
-                      {cantidadComentarios === 1
-                        ? " comentario"
-                        : " comentarios"}
-                    </span>
-                  )}
+                  <span className="text-sm">
+                    {cantidadComentarios === 0
+                      ? "Sin comentarios"
+                      : `${cantidadComentarios} ${cantidadComentarios === 1 ? "comentario" : "comentarios"}`}
+                  </span>
                 </Link>
 
                 <Link
