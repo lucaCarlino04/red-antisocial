@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+import {useAuth} from "../context/AuthContext";
 import { crearUsuario } from "../services/UsuarioService";
 import type { CamposFormulario } from "../types/FormularioRegistro";
 import type { ErroresRegistro } from "../types/ErroresRegistro";
@@ -8,25 +9,21 @@ export default function RegistroUsuario() {
 
   const navigate = useNavigate();
 
+  const {iniciar, user} = useAuth();
+
   const email_regex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-  const name_regex: RegExp = /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s'-]{2,}$/;
-  const name_min_length: number = 4;
   const nickname_min_length: number = 4;
-  const passCorrect: string = "123456";
+  const passCorrect: string = "12345678";
 
   const [errorServidor, setErrorServidor] = useState<string>("");
 
   const [errores, setErrores] = useState<Partial<ErroresRegistro>>({
-    nombre: "",
-    apellido: "",
     nickname: "",
     email: "",
     contraseña: ""
   })
 
   const [formulario, setFormulario] = useState<CamposFormulario>({
-    nombre: "",
-    apellido: "",
     nickname: "",
     email: "",
     contraseña: ""
@@ -40,18 +37,6 @@ export default function RegistroUsuario() {
   async function enviandoInformacion(e: any) {
     e.preventDefault();
     const erroresActuales: Partial<ErroresRegistro> = {};
-
-    if (formulario.nombre.length < name_min_length) {
-      erroresActuales.nombre = "El nombre no es correcto"
-    } else if (!name_regex.test(formulario.nombre)) {
-      erroresActuales.nombre = "El nombre no tiene formato valido"
-    }
-
-    if (formulario.apellido.length <= 0) {
-      erroresActuales.apellido = "El apellido es obligatorio"
-    } else if (!name_regex.test(formulario.apellido)) {
-      erroresActuales.apellido = "El apellido no tiene formato valido"
-    }
 
     if (formulario.nickname.length < nickname_min_length) {
       erroresActuales.nickname = "El nombre de usuario no es valido"
@@ -74,8 +59,9 @@ export default function RegistroUsuario() {
     }
 
     try {
-      await crearUsuario(formulario.nickname);
-      navigate("/iniciar");
+      await crearUsuario(formulario.nickname, formulario.contraseña, formulario.email);
+      await iniciar({nickName: formulario.nickname, password: formulario.contraseña});
+      navigate(`/perfil/${formulario.nickname}`)
     } catch (err) {
       setErrorServidor(err instanceof Error ? err.message : "Error inesperado");
     }
@@ -96,32 +82,6 @@ export default function RegistroUsuario() {
         }
 
         <form onSubmit={enviandoInformacion} className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <label className="flex flex-col gap-1">
-              <span>{errores.nombre ? errores.nombre : "Nombre"}</span>
-              <input
-                id="nombre"
-                type="text"
-                name="nombre"
-                placeholder="Nombre"
-                className="w-full rounded-md p-2 border transition border-2"
-                value={formulario.nombre}
-                onChange={completandoRegistro}
-              />
-            </label>
-            <label className="flex flex-col gap-1">
-              <span>{errores.apellido ? errores.apellido : "Apellido"}</span>
-              <input
-                id="apellido"
-                type="text"
-                name="apellido"
-                placeholder="Apellido"
-                className="w-full rounded-md p-2 border transition border-2"
-                value={formulario.apellido}
-                onChange={completandoRegistro}
-              />
-            </label>
-          </div>
           <label className="flex flex-col gap-1">
             <span>{errores.nickname ? errores.nickname : "Nickname"}</span>
             <input

@@ -26,11 +26,15 @@ export async  function obtenerUsuarioPorNickName(nickName: string): Promise<Usua
   return await respuesta.json();
 }
 
-export async function crearUsuario(nickName: string): Promise<Usuario> {
+export async function crearUsuario(nickName: string, password: string, email: string): Promise<Usuario> {
   const respuesta = await fetch(API_URL, {
     method: "POST",
     headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({nickName})
+    body: JSON.stringify({
+      nickName: nickName,
+      password: password,
+      email: email
+    })
   });
 
   if (!respuesta.ok) {
