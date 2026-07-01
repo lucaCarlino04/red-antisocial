@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
-import {useAuth} from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { crearUsuario } from "../services/UsuarioService";
 import type { CamposFormulario } from "../types/FormularioRegistro";
 import type { ErroresRegistro } from "../types/ErroresRegistro";
@@ -9,7 +9,7 @@ export default function RegistroUsuario() {
 
   const navigate = useNavigate();
 
-  const {iniciar, user} = useAuth();
+  const { iniciar } = useAuth();
 
   const email_regex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const nickname_min_length: number = 4;
@@ -49,7 +49,7 @@ export default function RegistroUsuario() {
     }
 
     if (formulario.contraseña !== passCorrect) {
-      erroresActuales.contraseña = "La contraseña no tiene la cantidad de caracteres requeridos"
+      erroresActuales.contraseña = "La contraseña es no es valida"
     }
 
     setErrores(erroresActuales);
@@ -60,7 +60,7 @@ export default function RegistroUsuario() {
 
     try {
       await crearUsuario(formulario.nickname, formulario.contraseña, formulario.email);
-      await iniciar({nickName: formulario.nickname, password: formulario.contraseña});
+      await iniciar({ nickName: formulario.nickname, password: formulario.contraseña });
       navigate(`/perfil/${formulario.nickname}`)
     } catch (err) {
       setErrorServidor(err instanceof Error ? err.message : "Error inesperado");
@@ -83,37 +83,37 @@ export default function RegistroUsuario() {
 
         <form onSubmit={enviandoInformacion} className="space-y-6">
           <label className="flex flex-col gap-1">
-            <span>{errores.nickname ? errores.nickname : "Nickname"}</span>
+            <span>Usuario</span>
             <input
               id="nickname"
               type="text"
               name="nickname"
-              placeholder="Nickname"
-              className="w-full rounded-md p-2 border transition border-2"
+              placeholder={errores.nickname ? errores.nickname : "Usuario"}
+              className={`w-full  rounded-md p-2 ${errores.nickname ? "border border-2 border-red-300 focus:ring-1 focus:ring-red-300 outline-none" : "border border-2 border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"}`}
               value={formulario.nickname}
               onChange={completandoRegistro}
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span>{errores.email ? errores.email : "Email"}</span>
+            <span>Email</span>
             <input
               id="email"
               type="email"
               name="email"
-              placeholder="Email"
-              className="w-full rounded-md p-2 border transition border-2"
+              placeholder={errores.email ? errores.email : "Email"}
+              className={`w-full  rounded-md p-2 ${errores.email ? "border border-2 border-red-300 focus:ring-1 focus:ring-red-300 outline-none" : "border border-2 border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"}`}
               value={formulario.email}
               onChange={completandoRegistro}
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span>{errores.contraseña ? errores.contraseña : "Contraseña"}</span>
+            <span>Contraseña</span>
             <input
               id="contraseña"
               type="password"
               name="contraseña"
-              placeholder="Contraseña"
-              className="w-full rounded-md p-2 border transition border-2"
+              placeholder={errores.contraseña ? errores.contraseña : "Contraseña"}
+              className={`w-full  rounded-md p-2 ${errores.contraseña ? "border border-2 border-red-300 focus:ring-1 focus:ring-red-300 outline-none" : "border border-2 border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"}`}
               value={formulario.contraseña}
               onChange={completandoRegistro}
             />
