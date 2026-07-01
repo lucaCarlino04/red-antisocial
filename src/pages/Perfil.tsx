@@ -4,7 +4,11 @@ import { useParams } from "react-router-dom";
 import type { Usuario } from "../types/Usuario";
 import type { Post } from "../types/Post";
 
-import { obtenerUsuarioPorNickName, seguirUsuario, dejarDeSeguirUsuario } from "../services/UsuarioService";
+import {
+  obtenerUsuarioPorNickName,
+  seguirUsuario,
+  dejarDeSeguirUsuario,
+} from "../services/UsuarioService";
 import { obtenerPostsDeUsuario } from "../services/PostService";
 import { obtenerComentariosPorPost } from "../services/ComentarioService";
 
@@ -25,7 +29,7 @@ export default function Perfil() {
     Record<string, number>
   >({});
   const esMiPerfil = isAuthenticated && user?.nickName === usuario?.nickName;
-  
+
   const cargarUsuario = async () => {
     if (!nickName) return;
 
@@ -37,7 +41,6 @@ export default function Perfil() {
 
     const contadorComentarios: Record<string, number> = {};
 
-
     for (const post of posts) {
       const comentarios = await obtenerComentariosPorPost(post._id);
       contadorComentarios[post._id] = comentarios.length;
@@ -47,7 +50,7 @@ export default function Perfil() {
   };
 
   const yaLoSigo = usuario?.followers.includes(user?._id ?? "") ?? false;
-  
+
   const toggleFollow = async () => {
     if (!user || !usuario) return;
 
@@ -66,19 +69,24 @@ export default function Perfil() {
       setLoadingFollow(false);
     }
   };
-    
+
   useEffect(() => {
     cargarUsuario();
   }, [nickName]);
 
   if (!usuario) return <p>Cargando...</p>;
-  
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white flex justify-center">
-      <div className="w-full max-w-xl px-4 py-6">
-        <UsuarioPerfil nickName={usuario} esMiPerfil={esMiPerfil} yaLoSigo={yaLoSigo} toggleFollow={toggleFollow} loading={loadingFollow} />
-        {posts ? (
+    <div className="min-h-[calc(100vh-10rem)] flex justify-center px-4">
+      <div className="w-full max-w-xl px-4 py-6 space-y-4">
+        <UsuarioPerfil
+          nickName={usuario}
+          esMiPerfil={esMiPerfil}
+          yaLoSigo={yaLoSigo}
+          toggleFollow={toggleFollow}
+          loading={loadingFollow}
+        />
+        {posts.length > 0 ? (
           posts.map((post) => (
             <ComponenteAnimado key={post._id}>
               <PostCard
@@ -88,9 +96,9 @@ export default function Perfil() {
             </ComponenteAnimado>
           ))
         ) : (
-          <div className="text-gray-500 text-sm">
-            Este usuario no ha subido nada todavía...
-          </div>
+          <h4 className="font-medium rounded-lg border border-dashed py-2 text-center text-zinc-600 dark:text-gray-500">
+            Todavia no hay publicaciones.
+          </h4>
         )}
       </div>
     </div>
