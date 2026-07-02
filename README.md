@@ -42,8 +42,8 @@ Una vez completada la instalación del repositorio del backend, seguir estos pas
 1. Cloná el repositorio o descomprimí el proyecto:
 
 ```bash
-   git clone "https://github.com/rodrigoleonel1/unahur-antisocial"
-   cd antisocial
+   git clone https://github.com/lucaCarlino04/red-antisocial-back.git
+   cd red-antisocial-back
 ```
 
 2. Instalá las dependencias:
@@ -55,7 +55,7 @@ Una vez completada la instalación del repositorio del backend, seguir estos pas
 3. Verificá el archivo `.env` debe contener la URL base del backend:
 
 ```
-   VITE_API_URL=http://localhost:3000
+   VITE_API_URL=http://localhost:7860
 ```
 
 4. Iniciá el servidor:
