@@ -22,7 +22,7 @@ export default function PostCard({
       <article
         className={`px-6 py-4 border rounded-lg bg-zinc-200 dark:bg-gray-900 transition-colors ${
           destacado
-            ? "border-blue-500"
+            ? "border-emerald-500"
             : "border-zinc-300 dark:border-gray-800/60"
         }`}
       >
@@ -30,7 +30,7 @@ export default function PostCard({
           <div className="flex items-center w-full justify-between gap-2">
             <Link
               to={`/perfil/${post.user.nickName}`}
-              className="font-semibold truncate text-blue-500 uppercase hover:text-blue-300 transition font-display"
+              className="font-semibold truncate text-emerald-500 hover:text-emerald-300 transition font-display"
             >
               @{post.user.nickName}
             </Link>
