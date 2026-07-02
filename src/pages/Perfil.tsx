@@ -19,10 +19,12 @@ import ComponenteAnimado from "../components/ComponenteAnimado";
 import Loader from "../components/Loader";
 
 import { useAuth } from "../context/AuthContext";
+import { useAlert } from "../context/AlertContext";
 
 export default function Perfil() {
   const { nickName } = useParams<{ nickName: string }>();
   const { isAuthenticated, user, refrescarUsuario } = useAuth();
+  const { mostrarAlerta } = useAlert();
   const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [loadingFollow, setLoadingFollow] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
@@ -60,8 +62,11 @@ export default function Perfil() {
     try {
       if (yaLoSigo) {
         await dejarDeSeguirUsuario(user.nickName, usuario.nickName);
+        mostrarAlerta(`Dejaste de seguir a ${usuario.nickName}`, "exito");
+
       } else {
         await seguirUsuario(user.nickName, usuario.nickName);
+        mostrarAlerta(`Ahora sigues a ${usuario.nickName}`, "exito");
       }
 
       await refrescarUsuario();

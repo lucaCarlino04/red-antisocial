@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useAlert } from "../context/AlertContext";
 import { crearUsuario } from "../services/UsuarioService";
 import type { CamposFormulario } from "../types/FormularioRegistro";
 import type { ErroresRegistro } from "../types/ErroresRegistro";
@@ -9,6 +10,8 @@ export default function RegistroUsuario() {
   const navigate = useNavigate();
 
   const { iniciar, user } = useAuth();
+  const { mostrarAlerta } = useAlert();
+
 
   const email_regex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const nickname_min_length: number = 4;
@@ -58,6 +61,7 @@ export default function RegistroUsuario() {
     setErrores(erroresActuales);
 
     if (Object.keys(erroresActuales).length > 0) {
+      mostrarAlerta("Por favor, completa correctamente los campos.", "error");
       return;
     }
 
@@ -74,6 +78,7 @@ export default function RegistroUsuario() {
 
       if (loginOk) {
         navigate(`/perfil/${formulario.nickname}`);
+        mostrarAlerta("Cuenta creada con éxito", "exito");
       } else {
         setErrorServidor(
           "Usuario creado, pero no se pudo iniciar sesión automáticamente.",

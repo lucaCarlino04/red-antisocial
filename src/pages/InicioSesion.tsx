@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useAlert } from "../context/AlertContext";
 
 export default function InicioSesion() {
   const navigate = useNavigate();
   const { iniciar, user } = useAuth();
+  const { mostrarAlerta } = useAlert();
 
   const [nickName, setnickName] = useState("");
   const [password, setPassword] = useState("");
@@ -40,7 +42,7 @@ export default function InicioSesion() {
       setError("");
       navigate("/");
     } else {
-      setError("Nickname o contraseña inválidos");
+      mostrarAlerta("Nombre de usuario o contraseña inválidos", "error");
     }
   }
 
