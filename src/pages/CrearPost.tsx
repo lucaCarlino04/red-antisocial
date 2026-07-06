@@ -19,7 +19,7 @@ export default function CrearPost() {
   const [description, setDescription] = useState("");
   const [tagsDisponibles, setTagsDisponibles] = useState<Tag[]>([]);
   const [tagsSeleccionados, setTagsSeleccionados] = useState<string[]>([]);
-  const [urlsImagenes, setUrlsImagenes] = useState<string[]>([""]);
+  const [imagenes, setImagenes] = useState<File[]>([]);
   const [nuevaEtiqueta, setNuevaEtiqueta] = useState("");
   const [creandoTag, setCreandoTag] = useState(false);
   const [errorTag, setErrorTag] = useState<string | null>(null);
@@ -42,21 +42,6 @@ export default function CrearPost() {
     }
     cargarEtiquetas();
   }, []);
-
-  const manejarCambioUrl = (index: number, valor: string) => {
-    const nuevasUrls = [...urlsImagenes];
-    nuevasUrls[index] = valor;
-    setUrlsImagenes(nuevasUrls);
-  };
-
-  const agregarCampoImagen = () => {
-    setUrlsImagenes([...urlsImagenes, ""]);
-  };
-
-  const eliminarCampoImagen = (index: number) => {
-    const nuevasUrls = urlsImagenes.filter((_, i) => i !== index);
-    setUrlsImagenes(nuevasUrls.length === 0 ? [""] : nuevasUrls);
-  };
 
   const manejarSeleccionTag = (tagId: string) => {
     setTagsSeleccionados((prev) =>
@@ -141,15 +126,13 @@ export default function CrearPost() {
 
       const nuevoPost = await crearPost(datosParaElBackend);
 
-      const imagenesValidas = urlsImagenes.filter((url) => url.trim() !== "");
-
-      if (imagenesValidas.length > 0 && nuevoPost._id) {
-        await asociarImagenAPost(nuevoPost._id, imagenesValidas);
+      if (imagenes.length > 0 && nuevoPost._id) {
+        await asociarImagenAPost(nuevoPost._id, imagenes);
       }
 
       mostrarAlerta("Publicación creada con éxito", "exito");
       setDescription("");
-      setUrlsImagenes([""]);
+      setImagenes([]);
       setTagsSeleccionados([]);
       navigate("/");
     } catch (err) {

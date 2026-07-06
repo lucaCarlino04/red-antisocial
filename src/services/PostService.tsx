@@ -55,19 +55,24 @@ export async function crearPost(postData: {
   return await respuesta.json();
 }
 
-export async function asociarImagenAPost(
+export async function asociarImagenesAPost(
   id: string,
-  urls: string[],
+  files: File[],
 ): Promise<Post> {
-  const respuesta = await fetch(`${API_URL}/${id}/imagenes`, {
+  const formData = new FormData();
+
+  files.forEach((file) => {
+    formData.append("images", file);
+  });
+
+  const respuesta = await fetch(`${API_URL}/${id}/images`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ urls }),
+    body: formData,
   });
 
   if (!respuesta.ok) {
-    throw new Error("No se pudieron asociar las imágenes al posteo.");
+    throw new Error("No se pudieron subir las imágenes.");
   }
 
-  return await respuesta.json();
+  return respuesta.json();
 }
