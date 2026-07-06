@@ -1,7 +1,7 @@
 import type { Tag } from "../types/Tag";
 import { URL } from "../api";
 
-const API_URL = `${URL}/etiquetas`;
+const API_URL = `${URL}/api/tags`;
 
 export async function obtenerTags(): Promise<Tag[]> {
   const respuesta = await fetch(API_URL);

@@ -2,7 +2,7 @@ import type {Usuario} from "../types/Usuario";
 
 import { URL } from "../api";
 
-const API_URL = `${URL}/usuarios`;
+const API_URL = `${URL}/api/users`;
 
 export async function obtenerUsuarios(): Promise<Usuario[]> {
   const respuesta = await fetch(API_URL);
@@ -45,7 +45,7 @@ export async function crearUsuario(nickName: string, password: string, email: st
 }
 
 export async function seguirUsuario( nickFollower: string, nickFollowed: string): Promise<void> {
-  const respuesta = await fetch(`${API_URL}/${nickFollower}/seguir`, {
+  const respuesta = await fetch(`${API_URL}/${nickFollower}/follow`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -55,9 +55,6 @@ export async function seguirUsuario( nickFollower: string, nickFollowed: string)
     }),
   });
 
-  // if (!respuesta.ok) {
-  //   throw new Error("No se pudo seguir al usuario");
-  // }
     if (!respuesta.ok) {
     const error = await respuesta.json();
     console.log(error);
@@ -68,7 +65,7 @@ export async function seguirUsuario( nickFollower: string, nickFollowed: string)
 
 export async function dejarDeSeguirUsuario(nickFollower: string, nickFollowed: string): Promise<void> {
   const respuesta = await fetch(
-    `${API_URL}/${nickFollower}/dejar-de-seguir`,
+    `${API_URL}/${nickFollower}/unfollow`,
     {
       method: "POST",
       headers: {

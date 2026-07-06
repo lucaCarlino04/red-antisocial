@@ -1,7 +1,7 @@
 import type { Post } from "../types/Post";
 import { URL } from "../api";
 
-const API_URL = `${URL}/publicaciones`;
+const API_URL = `${URL}/api/posts`;
 
 export async function obtenerPosts(): Promise<Post[]> {
   const respuesta = await fetch(API_URL);
