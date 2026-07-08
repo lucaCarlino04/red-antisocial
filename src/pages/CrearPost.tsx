@@ -8,7 +8,7 @@ import type { Tag } from "../types/Tag";
 import Loader from "../components/Loader";
 import ComponenteError from "../components/ComponenteError";
 import ComponenteAnimado from "../components/ComponenteAnimado";
-import { Plus, Trash2, Image, Tag as TagIcon } from "lucide-react";
+import { Plus, Image, Tag as TagIcon } from "lucide-react";
 import TagBoton from "../components/TagBoton";
 
 export default function CrearPost() {
