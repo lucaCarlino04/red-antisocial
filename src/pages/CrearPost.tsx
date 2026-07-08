@@ -237,7 +237,7 @@ export default function CrearPost() {
             {/* Carga de URLs de Imágenes */}
             <div className="space-y-2">
               <label className="flex items-center gap-1.5 text-sm font-semibold text-zinc-700 dark:text-gray-300">
-                <Image size={16} /> Imágenes (Opcional)
+                <Image size={16} /> Imágenes (Límite: 4)
               </label>
 
               <input
