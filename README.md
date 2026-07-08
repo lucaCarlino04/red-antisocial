@@ -1,6 +1,7 @@
-# Antisocial-UNAHUR
+# Red Antisocial
 
-Este proyecto es una red social desarrollada con React-TypeScript (front) y Node-MongoDB (back), que permite a los usuarios registrarse, iniciar sesión, crear publicaciones con imágenes y etiquetas, comentar posteos y visitar perfiles de otros usuarios, asi como seguirlos y dejarlos de seguir.
+Este proyecto es una red social desarrollada con React-TypeScript (front) y Node-MongoDB-Redis (back), que permite a los usuarios registrarse, iniciar sesión, crear publicaciones con imágenes y etiquetas, comentar posteos y visitar perfiles de otros usuarios, asi como seguirlos y dejarlos de seguir.
+Se encuentra desplegado en [red-antisocial.vercel.app](https://red-antisocial.vercel.app/)
 
 ## Funcionalidades
 
@@ -12,6 +13,7 @@ Este proyecto es una red social desarrollada con React-TypeScript (front) y Node
 - Funciones de seguir y dejar de seguir usuarios
 - Rutas protegidas (crear publicación y ver perfil requieren estar autenticado)
 - Tema claro/oscuro
+- Almacenamiento de datos en la nube y persistencia de la sesión en localStorage
 
 ## Tecnologías utilizadas
 
@@ -22,15 +24,16 @@ Este proyecto es una red social desarrollada con React-TypeScript (front) y Node
 - Lucide React (iconos)
 - Node con Express
 - MongoDB y Mongoose
+- Redis para almacenamiento en caché
 - Docker y Docker Compose
 
-## Instrucciones para correr el repositorio
+## Instrucciones para correr el repositorio localmente
 
 ### Requisitos previos
 
 - Node.js
 - Docker y Docker compose para el back-end
-- El backend de Antisocial corriendo localmente (Se puede clonar desde: https://github.com/EP-UnaHur-2026C1/copia-anti-social-documental-tp-persistenten-ts). Este mismo repositorio contiene sus propias instrucciones para correrlo y es necesario para visualizar correctamente este trabajo.
+- El backend de Antisocial corriendo localmente (Se puede clonar desde: https://github.com/lucaCarlino04/red-antisocial-back.git). Ese mismo repositorio contiene sus propias instrucciones para correrlo y es necesario para visualizar correctamente este trabajo.
 
 ### Pasos
 
@@ -39,8 +42,8 @@ Una vez completada la instalación del repositorio del backend, seguir estos pas
 1. Cloná el repositorio o descomprimí el proyecto:
 
 ```bash
-   git clone "https://github.com/rodrigoleonel1/unahur-antisocial"
-   cd antisocial
+   git clone https://github.com/lucaCarlino04/red-antisocial-back.git
+   cd red-antisocial-back
 ```
 
 2. Instalá las dependencias:
@@ -52,7 +55,7 @@ Una vez completada la instalación del repositorio del backend, seguir estos pas
 3. Verificá el archivo `.env` debe contener la URL base del backend:
 
 ```
-   VITE_API_URL=http://localhost:3000
+   VITE_API_URL=http://localhost:7860
 ```
 
 4. Iniciá el servidor:
@@ -65,8 +68,10 @@ Una vez completada la instalación del repositorio del backend, seguir estos pas
 
 ## URL de la API utilizada
 
-El el proyecto consume una API propia, disponible para clonar desde:
+El proyecto consume una API propia, disponible para clonar desde:
 
-https://github.com/EP-UnaHur-2026C1/copia-anti-social-documental-tp-persistenten-ts
+https://github.com/lucaCarlino04/red-antisocial-back.git
 
-Este backend debe estar corriendo localmente para que la aplicación funcione correctamente. 
+---
+
+Este proyecto nació como parte del segundo parcial de la materia Construcción de Interfaces de Usuario de la Universidad Nacional de Hurlingham. Posteriormente seguí trabajando por mi cuenta en el proyecto para extenderlo.
